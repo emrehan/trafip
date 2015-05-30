@@ -1,6 +1,7 @@
 package co.tuzun.emrehan.trafip;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -78,7 +79,7 @@ public class MainActivity extends ActionBarActivity implements SurfaceHolder.Cal
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        Uri video = Uri.parse("android.resource://co.tuzun.emrehan.twitpic/"
+        Uri video = Uri.parse("android.resource://co.tuzun.emrehan.trafip/"
                 + R.raw.newyork);
 
         try {
@@ -86,11 +87,12 @@ public class MainActivity extends ActionBarActivity implements SurfaceHolder.Cal
             mp.setDataSource(this, video);
             mp.prepare();
             mp.setLooping(true);
+            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mp.setVolume(0, 0);
             Log.d("video", "" + video.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         //Get the dimensions of the video
         int videoWidth = mp.getVideoHeight();
@@ -99,7 +101,11 @@ public class MainActivity extends ActionBarActivity implements SurfaceHolder.Cal
 
 
         //Start video
-        mp.start();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
         Log.d("video", "" + mp.isPlaying());
     }
 
