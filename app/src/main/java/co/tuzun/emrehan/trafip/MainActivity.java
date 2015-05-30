@@ -10,13 +10,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity implements SurfaceHolder.Callback {
 
+    private Button mainButton;
+
     private Intent intent;
+
     private MediaPlayer mp = null;
     SurfaceView mSurfaceView=null;
     private SurfaceHolder holder;
@@ -27,6 +37,15 @@ public class MainActivity extends ActionBarActivity implements SurfaceHolder.Cal
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().hide();
+
+        mainButton = (Button) findViewById(R.id.main_button);
+        mainButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), DestinationActivity.class);
+                startActivity(intent);
+            }
+        });
+
         mSurfaceView = (SurfaceView)findViewById(R.id.surface);
         mp = new MediaPlayer();
 
