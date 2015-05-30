@@ -26,7 +26,8 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
+    private LatLng mLastLatLng;
+    private LatLng mTappedLatLng;
     private LocationRequest mLocationRequest;
 
     @Override
@@ -52,12 +53,25 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng point) {
+                mTappedLatLng = point;
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions().position(mTappedLatLng));
+                // make a web call and toast result
+                // Toast.makeText(DestinationActivity.this, mLastLatLng + " -> " + mTappedLatLng, Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), mLastLatLng + " -> " + mTappedLatLng, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        mLastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         startLocationUpdates();
     }
 
@@ -83,12 +97,11 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        mLastLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         updateUI();
     }
 
     private void updateUI() {
-        LatLng mLastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
         CameraUpdate center=
                 CameraUpdateFactory.newLatLng(mLastLatLng);
@@ -102,9 +115,10 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
     public void onConnectionSuspended(int i) {
         Location newLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        LatLng newLatLng = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
-        if (newLocation != null)
-            mLastLocation = newLocation;
+        if (newLatLng != null)
+            mLastLatLng = newLatLng;
     }
 
     @Override
