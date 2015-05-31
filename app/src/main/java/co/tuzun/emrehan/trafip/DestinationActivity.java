@@ -1,16 +1,14 @@
 package co.tuzun.emrehan.trafip;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -21,7 +19,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.melnykov.fab.FloatingActionButton;
 
 public class DestinationActivity extends TrafipActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -30,12 +28,12 @@ public class DestinationActivity extends TrafipActivity implements OnMapReadyCal
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     protected GoogleMap mMap;
+    private FloatingActionButton fab;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination);
-        getSupportActionBar().hide();
 
         createGoogleApiClient();
         createLocationRequest();
@@ -43,15 +41,17 @@ public class DestinationActivity extends TrafipActivity implements OnMapReadyCal
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setColorNormal(getResources().getColor(R.color.background_floating_material_light));
     }
 
     @Override
     public void onLocationChanged(Location location) {
         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        updateUI();
     }
 
-    private void updateUI() {
+    private void zoomOnCurrentLatLng() {
         CameraUpdate center=
                 CameraUpdateFactory.newLatLng(currentLatLng);
         CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
@@ -59,6 +59,7 @@ public class DestinationActivity extends TrafipActivity implements OnMapReadyCal
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -85,15 +86,21 @@ public class DestinationActivity extends TrafipActivity implements OnMapReadyCal
         mMap = map;
         mMap.setMyLocationEnabled(true);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
             @Override
             public void onMapClick(LatLng point) {
                 destinationLatLng = point;
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(destinationLatLng));
-                // make a web call and toast result
-                // Toast.makeText(DestinationActivity.this, currentLatLng + " -> " + destinationLatLng, Toast.LENGTH_SHORT);
-                Toast.makeText(getApplicationContext(), currentLatLng + " -> " + destinationLatLng, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DestinationActivity.this, currentLatLng + " -> " + destinationLatLng, Toast.LENGTH_SHORT).show();
+                // Enable floating action button
+                fab.setColorNormal(getResources().getColor(R.color.trafi_orange));
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplicationContext(), RoutesActivity.class);
+                        startActivity(intent);
+                    }
+                });
             }
         });
     }
@@ -103,6 +110,9 @@ public class DestinationActivity extends TrafipActivity implements OnMapReadyCal
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+        zoomOnCurrentLatLng();
+
         startLocationUpdates();
     }
 

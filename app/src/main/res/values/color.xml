@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="trafi_orange">#E24B2C</color>
+    <color name="pressed">#931A00</color>
+    <color name="ripple">#FF9680</color>
+</resources>

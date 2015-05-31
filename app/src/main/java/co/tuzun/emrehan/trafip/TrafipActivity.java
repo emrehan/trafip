@@ -26,6 +26,7 @@ public class TrafipActivity extends ActionBarActivity implements LocationListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
     }
 
     @Override
