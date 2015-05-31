@@ -17,7 +17,7 @@ import android.widget.Button;
 import java.io.IOException;
 
 
-public class MainActivity extends ActionBarActivity implements SurfaceHolder.Callback {
+public class MainActivity extends TrafipActivity implements SurfaceHolder.Callback {
 
     private Button mainButton;
 
@@ -28,7 +28,7 @@ public class MainActivity extends ActionBarActivity implements SurfaceHolder.Cal
     private SurfaceHolder holder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

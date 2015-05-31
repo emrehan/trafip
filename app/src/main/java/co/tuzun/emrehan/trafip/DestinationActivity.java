@@ -3,6 +3,8 @@ package co.tuzun.emrehan.trafip;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,25 +23,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class DestinationActivity extends FragmentActivity implements OnMapReadyCallback,
-        ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+public class DestinationActivity extends TrafipActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private GoogleMap mMap;
+
     private GoogleApiClient mGoogleApiClient;
-    private LatLng mLastLatLng;
-    private LatLng mTappedLatLng;
     private LocationRequest mLocationRequest;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
+    protected GoogleMap mMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination);
+        getSupportActionBar().hide();
 
         createGoogleApiClient();
         createLocationRequest();
@@ -50,6 +46,41 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
     }
 
     @Override
+    public void onLocationChanged(Location location) {
+        currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        updateUI();
+    }
+
+    private void updateUI() {
+        CameraUpdate center=
+                CameraUpdateFactory.newLatLng(currentLatLng);
+        CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
+
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setMyLocationEnabled(true);
@@ -57,12 +88,12 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
 
             @Override
             public void onMapClick(LatLng point) {
-                mTappedLatLng = point;
+                destinationLatLng = point;
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(mTappedLatLng));
+                mMap.addMarker(new MarkerOptions().position(destinationLatLng));
                 // make a web call and toast result
-                // Toast.makeText(DestinationActivity.this, mLastLatLng + " -> " + mTappedLatLng, Toast.LENGTH_SHORT);
-                Toast.makeText(getApplicationContext(), mLastLatLng + " -> " + mTappedLatLng, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(DestinationActivity.this, currentLatLng + " -> " + destinationLatLng, Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), currentLatLng + " -> " + destinationLatLng, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -71,7 +102,7 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
     public void onConnected(Bundle connectionHint) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        mLastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        currentLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         startLocationUpdates();
     }
 
@@ -95,21 +126,6 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
                 mGoogleApiClient, mLocationRequest, (LocationListener) this);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        updateUI();
-    }
-
-    private void updateUI() {
-
-        CameraUpdate center=
-                CameraUpdateFactory.newLatLng(mLastLatLng);
-        CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
-
-        mMap.moveCamera(center);
-        mMap.animateCamera(zoom);
-    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -118,7 +134,7 @@ public class DestinationActivity extends FragmentActivity implements OnMapReadyC
         LatLng newLatLng = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
         if (newLatLng != null)
-            mLastLatLng = newLatLng;
+            currentLatLng = newLatLng;
     }
 
     @Override

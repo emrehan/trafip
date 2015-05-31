@@ -6,10 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class DetailsActivity extends ActionBarActivity {
+public class DetailsActivity extends TrafipActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
     }

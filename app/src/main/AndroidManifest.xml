@@ -43,6 +43,10 @@
             android:name=".LastActivity"
             android:label="@string/title_activity_last" >
         </activity>
+        <activity
+            android:name=".TrafipActivity"
+            android:label="@string/title_activity_trafip" >
+        </activity>
     </application>
 
 </manifest>
