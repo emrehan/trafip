@@ -1,5 +1,6 @@
 package co.tuzun.emrehan.trafip;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -17,7 +18,7 @@ import android.widget.Button;
 import java.io.IOException;
 
 
-public class MainActivity extends TrafipActivity implements SurfaceHolder.Callback {
+public class MainActivity extends Activity implements SurfaceHolder.Callback {
 
     private Button mainButton;
 

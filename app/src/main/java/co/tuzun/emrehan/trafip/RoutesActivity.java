@@ -1,5 +1,6 @@
 package co.tuzun.emrehan.trafip;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -18,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class RoutesActivity extends TrafipActivity {
+public class RoutesActivity extends Activity {
     String url;
     WebView webView;
 
@@ -29,6 +31,8 @@ public class RoutesActivity extends TrafipActivity {
 
         webView = new WebView(this);
         setContentView(webView);
+
+        Toast.makeText(this, "^^ " + App.getInstance().currentLatLng + " -> " + App.getInstance().destinationLatLng, Toast.LENGTH_SHORT).show();
 
         new LoadRoutesTask().execute();
     }
@@ -54,13 +58,13 @@ public class RoutesActivity extends TrafipActivity {
         protected Void doInBackground(Void... arg0) {
             try {
                 url = "http://web.trafi.com/#!route-search/";
-                url += currentLatLng.latitude;
+                url += App.getInstance().currentLatLng.latitude;
                 url += "%3B";
-                url += currentLatLng.longitude;
+                url += App.getInstance().currentLatLng.longitude;
                 url += "/";
-                url += destinationLatLng.latitude;
+                url += App.getInstance().destinationLatLng.latitude;
                 url += "%3B";
-                url += destinationLatLng.longitude;
+                url += App.getInstance().destinationLatLng.longitude;
                 url += "/";
 //        url += new SimpleDateFormat("yyyy-MM-dd/HH:mm").format(new Date());
                 url += new SimpleDateFormat("yyyy-MM-dd/").format(new Date());
@@ -83,6 +87,8 @@ public class RoutesActivity extends TrafipActivity {
                     String mime = "text/html";
                     String encoding = "utf-8";
                     webView.loadData(html, mime, encoding);
+
+                    Log.e("html: ", html);
                 }
             } catch (Exception e) {
                 Log.d("myapp", Log.getStackTraceString(e));

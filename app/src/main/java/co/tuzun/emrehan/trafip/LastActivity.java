@@ -1,12 +1,13 @@
 package co.tuzun.emrehan.trafip;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class LastActivity extends TrafipActivity {
+public class LastActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
